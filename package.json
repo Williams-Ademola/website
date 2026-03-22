@@ -1,5 +1,5 @@
 {
-  "name": "nexxel.dev",
+  "name": "williamsindepth",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
     "babel-plugin-react-compiler": "^19.0.0-beta-a7bf2bd-20241110",
     "lucide-react": "^0.456.0",
     "next": "15.0.3",
-    "next-mdx-remote": "^5.0.0",
+    "next-mdx-remote": "^6.0.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "shiki": "^1.22.2",
