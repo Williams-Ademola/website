@@ -44,11 +44,11 @@ export function Navbar() {
           [h] home
         </Link>
         <Link
-          href="/blog"
+          href="https://williamsindepth.substack.com"
           prefetch={true}
           className="hover:text-accent transition-colors duration-200"
         >
-          [b] blog
+          [w] writing
         </Link>
         <Link
           href="/projects"
