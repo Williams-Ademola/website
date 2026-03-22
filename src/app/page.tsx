@@ -39,20 +39,36 @@ const workItems: Item[] = [
 
 const projectItems = [
   {
-    title: "create-t3-app",
-    role: "creator and maintainer",
-    description:
-      "open-source project for initializing full-stack next.js apps. 24k+ stars, 200+ contributors",
-    href: "https://create.t3.gg",
+    title: "BYO-Lisp",
+    role: "creator",
+    description: "building a lisp interpreter from scratch in c",
+    href: "https://github.com/Williams-Ademola/BYO-Lisp",
   },
   {
-    title: "mini-git",
+    title: "Symbolic Differentiation Engine",
     role: "creator",
-    description: "simplified version of git from scratch",
-    href: "https://github.com/nexxeln/mini-git",
+    description: "an engine that symbolically differentiates mathematical expressions",
+    href: "https://github.com/Williams-Ademola/Symbolic-Differentiation-Engine-",
+  },
+  {
+    title: "Light Pollution Detection",
+    role: "creator",
+    description: "measuring and mapping intensity of light pollution",
+    href: "https://github.com/Williams-Ademola/Light-pollution-detection",
+  },
+  {
+    title: "Product Recommendation System",
+    role: "creator",
+    description: "analyzing user behavior and preferences with java",
+    href: "https://github.com/Williams-Ademola/Product-recommendation-system",
+  },
+  {
+    title: "File Based Router",
+    role: "creator",
+    description: "file based routing implementation with golang",
+    href: "https://github.com/Williams-Ademola/File-Based-Router",
   },
 ]
-
 export default function HomePage() {
   return (
     <>
