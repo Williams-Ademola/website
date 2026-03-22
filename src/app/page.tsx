@@ -46,19 +46,6 @@ const projectItems = [
   },
 ]
 export default function HomePage() {
-  return (
-    <>
-      <Header />
-      <SectionList title="work" items={workItems} />
-      <BlogSection />
-      <SectionList
-        title="projects"
-        items={projectItems}
-        viewAllHref="/projects"
-        viewAllText="all projects"
-      />
-      <LinksSection />
-    </>
 
     return (
   <>
