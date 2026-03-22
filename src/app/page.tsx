@@ -2,6 +2,7 @@ import { Header } from "@/components/header"
 import { Item, SectionList } from "@/components/section-list"
 import { BlogSection } from "@/components/blog-section"
 import { LinksSection } from "@/components/links-section"
+import { WritingSection } from "@/components/writing-section"
 
 const workItems: Item[] = [
   {
