@@ -59,5 +59,19 @@ export default function HomePage() {
       />
       <LinksSection />
     </>
+
+    return (
+  <>
+    <Header />
+    <WritingSection />
+    <SectionList
+      title="projects"
+      items={projectItems}
+      viewAllHref="/projects"
+      viewAllText="all projects"
+    />
+    <LinksSection />
+  </>
+)
   )
 }
