@@ -10,12 +10,12 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.nexxel.dev"),
-  title: {
-    default: "Shoubhit Dash",
-    template: "%s | Shoubhit Dash",
-  },
-  description: "Developer, cardist and maker of things.",
+  metadataBase: new URL("https://www.williamsindepth.dev"),
+title: {
+  default: "Williams Ogunjide",
+  template: "%s | Williams Ogunjide",
+},
+description: "CS and Math undergrad. I write about math, code, and ideas.",
   openGraph: {
     title: "Shoubhit Dash",
     description: "Developer, cardist and maker of things.",
