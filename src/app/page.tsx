@@ -5,35 +5,11 @@ import { LinksSection } from "@/components/links-section"
 
 const workItems: Item[] = [
   {
-    title: "mocha",
+    title: "Crest",
     role: "co-founder and cto",
     period: "jul 2025 - present",
-    description: "building an ai native email client designed for speed and ease of use",
-    href: "https://mocha.email",
-  },
-  {
-    title: "ENS labs",
-    role: "software engineer",
-    period: "feb 2025 - jul 2025",
-    description:
-      "helped migrate ensjs to namechain and optimized ci for the manager app",
-    href: "https://ens.domains",
-  },
-  {
-    title: "leapflow",
-    role: "co-founder and cto",
-    period: "may 2024 - jun 2025",
-    description:
-      "headed engineering to develop ai agents that automate repetitive workflows in existing software",
-    href: "https://leapflow.tech",
-  },
-  {
-    title: "dimension",
-    role: "full-stack engineer",
-    period: "nov 2023 - jan 2024",
-    description:
-      "contributed to a large-scale t3 stack app. worked on real-time presence and chat features",
-    href: "https://dimension.dev",
+    description: "building an ai personal assistant for the linux ecosystem",
+    href: "tba",
   },
 ]
 
