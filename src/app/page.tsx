@@ -60,5 +60,4 @@ export default function HomePage() {
     <LinksSection />
   </>
 )
-  )
 }
