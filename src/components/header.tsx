@@ -23,6 +23,7 @@ export function Header() {
         Hi there, I'm Williams. I'm a CS and Math undergrad student with a near crippling tac fps addiction. 
         I like consuming lovecraftian literature and building things. 
         I enjoy stochastic calculus, machine learning and making my problems go away with the terminal. 
+        p.s i also have a deeeeep love for appreciating good food.
       </p>
     </header>
   )
