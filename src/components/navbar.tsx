@@ -56,6 +56,13 @@ export function Navbar() {
         >
           [p] projects
         </Link>
+        <Link
+          href="/semester"
+          className="hover:text-accent transition-colors duration-200"
+        >
+          [s] semester
+        </Link>
+        
       </div>
     </nav>
   )
