@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import {
   COURSES, COURSE_NAME, NEXT, NOTES, POINTS, RESOURCES, TAG_LABEL, TARGETS,
@@ -14,6 +14,7 @@ interface SavedState {
 }
 
 const STORAGE_KEY = "semester-fall-2026";
+const SYNC_KEY = "semester-sync-key";
 const EMPTY: SavedState = { done: {}, scores: { stat: {}, phys: {}, hist: {} } };
 const TABS = [
   { key: "1", id: "week", label: "this week" },
@@ -22,11 +23,55 @@ const TABS = [
   { key: "4", id: "notes", label: "notes" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
+type SyncStatus = "off" | "loading" | "synced" | "saving" | "error" | "wrong key";
 
 const day = (s: string) => new Date(`${s}T12:00:00`);
 const fmt = (s: string) =>
   day(s).toLocaleDateString("en-CA", { month: "short", day: "numeric" }).toLowerCase();
 const taskId = (w: Week, i: number) => `w${w.n}-${i}`;
+
+function normalize(x: Partial<SavedState> | null | undefined): SavedState {
+  return {
+    done: x?.done ?? {},
+    scores: { ...EMPTY.scores, ...(x?.scores ?? {}) },
+  };
+}
+
+function readLocal(): SavedState | null {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? normalize(JSON.parse(raw)) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocal(s: SavedState) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  } catch {
+    /* ignore */
+  }
+}
+
+async function pull(key: string): Promise<SavedState | null | "unauthorized"> {
+  const res = await fetch("/api/semester", { headers: { "x-semester-key": key }, cache: "no-store" });
+  if (res.status === 401) return "unauthorized";
+  if (!res.ok) throw new Error("pull failed");
+  const { state } = (await res.json()) as { state: Partial<SavedState> | null };
+  return state ? normalize(state) : null;
+}
+
+async function push(key: string, s: SavedState) {
+  const res = await fetch("/api/semester", {
+    method: "PUT",
+    headers: { "x-semester-key": key, "Content-Type": "application/json" },
+    body: JSON.stringify(s),
+  });
+  if (res.status === 401) return "unauthorized" as const;
+  if (!res.ok) throw new Error("push failed");
+  return "ok" as const;
+}
 
 function currentWeek(now: Date): Week {
   return WEEKS.find((w) => now <= new Date(`${w.end}T23:59:59`)) ?? WEEKS[WEEKS.length - 1];
@@ -76,31 +121,102 @@ export default function SemesterPlanner() {
   const [now, setNow] = useState<Date | null>(null);
   const [state, setState] = useState<SavedState>(EMPTY);
   const [tab, setTab] = useState<TabId>("week");
+  const [syncKey, setSyncKey] = useState<string | null>(null);
+  const [sync, setSync] = useState<SyncStatus>("off");
+  const [keyInput, setKeyInput] = useState("");
+  const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadFromServer = useCallback(async (key: string, local: SavedState | null) => {
+    setSync("loading");
+    try {
+      const remote = await pull(key);
+      if (remote === "unauthorized") {
+        setSync("wrong key");
+        return false;
+      }
+      if (remote) {
+        setState(remote);
+        writeLocal(remote);
+      } else if (local) {
+        await push(key, local);
+      }
+      setSync("synced");
+      return true;
+    } catch {
+      setSync("error");
+      return false;
+    }
+  }, []);
 
   useEffect(() => {
     setNow(new Date());
+    const local = readLocal();
+    if (local) setState(local);
+    let key: string | null = null;
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<SavedState>;
-        setState({
-          done: parsed.done ?? {},
-          scores: { ...EMPTY.scores, ...(parsed.scores ?? {}) },
-        });
-      }
-    } catch {
-      /* storage unavailable, start fresh */
-    }
-  }, []);
-
-  const persist = useCallback((next: SavedState) => {
-    setState(next);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      key = window.localStorage.getItem(SYNC_KEY);
     } catch {
       /* ignore */
     }
-  }, []);
+    if (key) {
+      setSyncKey(key);
+      void loadFromServer(key, local);
+    }
+  }, [loadFromServer]);
+
+  useEffect(() => {
+    if (!syncKey) return;
+    const onFocus = () => {
+      if (document.visibilityState === "visible" && !pushTimer.current) void loadFromServer(syncKey, null);
+    };
+    document.addEventListener("visibilitychange", onFocus);
+    return () => document.removeEventListener("visibilitychange", onFocus);
+  }, [syncKey, loadFromServer]);
+
+  const persist = useCallback(
+    (next: SavedState) => {
+      setState(next);
+      writeLocal(next);
+      if (!syncKey) return;
+      setSync("saving");
+      if (pushTimer.current) clearTimeout(pushTimer.current);
+      pushTimer.current = setTimeout(async () => {
+        try {
+          pushTimer.current = null;
+          const r = await push(syncKey, next);
+          setSync(r === "unauthorized" ? "wrong key" : "synced");
+        } catch {
+          setSync("error");
+        }
+      }, 600);
+    },
+    [syncKey],
+  );
+
+  const connect = async () => {
+    const key = keyInput.trim();
+    if (!key) return;
+    const ok = await loadFromServer(key, readLocal());
+    if (ok) {
+      try {
+        window.localStorage.setItem(SYNC_KEY, key);
+      } catch {
+        /* ignore */
+      }
+      setSyncKey(key);
+      setKeyInput("");
+    }
+  };
+
+  const disconnect = () => {
+    try {
+      window.localStorage.removeItem(SYNC_KEY);
+    } catch {
+      /* ignore */
+    }
+    setSyncKey(null);
+    setSync("off");
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -148,12 +264,7 @@ export default function SemesterPlanner() {
         return (
           <li key={id}>
             <label className="flex items-start gap-3 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={done}
-                onChange={() => toggle(id)}
-                className="sr-only peer"
-              />
+              <input type="checkbox" checked={done} onChange={() => toggle(id)} className="sr-only peer" />
               <span
                 aria-hidden
                 className={`shrink-0 text-sm peer-focus-visible:text-accent ${done ? "text-accent" : "text-gray-600 group-hover:text-gray-400"}`}
@@ -183,6 +294,15 @@ export default function SemesterPlanner() {
       </div>
     ) : null;
 
+  const syncLabel: Record<SyncStatus, string> = {
+    off: "saved on this device only",
+    loading: "syncing…",
+    synced: "synced across devices",
+    saving: "saving…",
+    error: "couldn't reach the server, saved on this device",
+    "wrong key": "that key didn't work",
+  };
+
   return (
     <main className="animate-fade-in-up">
       <h1 className="text-4xl font-bold mb-8 text-white">
@@ -193,7 +313,6 @@ export default function SemesterPlanner() {
         need on everything left to land the grade i want.
       </p>
 
-      {/* timeline */}
       <section className="mb-10" aria-label="term timeline">
         <div className="overflow-x-auto">
           <div className="flex gap-1 min-w-[560px] text-xs">
@@ -317,7 +436,7 @@ export default function SemesterPlanner() {
           <Heading>grades</Heading>
           <p className="text-gray-400 mb-10 leading-relaxed text-sm">
             marks go in as percentages when they come back. each table shows the average needed on everything
-            left to land that grade. marks stay in this browser only.
+            left to land that grade.
           </p>
           <TermGpa scores={state.scores} />
           <div className="space-y-12 mt-12">
@@ -374,6 +493,39 @@ export default function SemesterPlanner() {
           </div>
         </section>
       )}
+
+      <footer className="mt-16 pt-6 border-t border-gray-800 text-xs text-gray-600">
+        {syncKey ? (
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className={sync === "error" || sync === "wrong key" ? "text-accent" : ""}>[{syncLabel[sync]}]</span>
+            <button onClick={disconnect} className="hover:text-accent transition-colors">
+              [stop syncing on this device]
+            </button>
+          </p>
+        ) : (
+          <form
+            className="flex flex-wrap items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void connect();
+            }}
+          >
+            <span className={sync === "wrong key" || sync === "error" ? "text-accent" : ""}>[{syncLabel[sync]}]</span>
+            <input
+              type="password"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              placeholder="sync key"
+              aria-label="sync key"
+              autoComplete="current-password"
+              className="bg-transparent border border-gray-800 rounded px-2 py-1 text-gray-300 outline-none focus:border-accent/50 w-40"
+            />
+            <button type="submit" className="hover:text-accent transition-colors">
+              [sync]
+            </button>
+          </form>
+        )}
+      </footer>
     </main>
   );
 }
