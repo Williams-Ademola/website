@@ -58,8 +58,16 @@ export const WEEKS: Week[] = [
       ["phys", "read 3.2 (vectors)"],
       ["hist", "finish unit 2 learning activities"],
       ["hist", "assignment 1: thesis and outline, then body paragraphs"],
+      ["phys", "finish quizzes 1 to 4 before tuesday 11:30am (unlocked, 3 attempts each, best mark counts)"],
+      ["phys", "work the workshop 1 solutions until you can solve each problem without looking"],
+      ["phys", "go through the kinematics lecture slides and the onenote lecture solutions"],
+      ["hist", "write map test 1 once it opens (access starts tuesday)"],
     ],
-    due: [["phys", "tue sep 29", "quizzes due"], ["stat", "fri oct 2", "assignment 1 due 11:59pm (10%)"]],
+    due: [
+      ["phys", "tue sep 29", "quizzes 1 to 4 due before 11:30am"],
+      ["hist", "tue sep 29", "map test 1 opens (1.5%)"],
+      ["stat", "fri oct 2", "assignment 1 due 11:59pm (10%)"],
+    ],
   },
   {
     n: 5, start: "2026-10-05", end: "2026-10-11", title: "history essay week",
@@ -203,6 +211,7 @@ export const WINTER: [string, string][] = [
 ];
 
 export const NEXT: [CourseKey, string, string, boolean][] = [
+  ["phys", "2026-09-29T11:30", "physics quizzes 1 to 4", false],
   ["stat", "2026-10-02T23:59", "stats assignment 1", false],
   ["hist", "2026-10-09T23:59", "history assignment 1", false],
   ["phys", "2026-10-13T11:30", "physics workshop 2", false],
@@ -240,7 +249,7 @@ export const COURSES: Record<CourseKey, Course> = {
       ["mid", "midterm", 25],
       ["fin", "final exam", 40],
     ],
-    note: "curved around the class mean, but cutoffs never go above a 80, b+ 75, b 70. these targets are the worst case.",
+    note: "workshop 1 is excused and its weight is spread over the other four, so each remaining workshop is 5%. curved around the class mean, but cutoffs never go above a 80, b+ 75, b 70. these targets are the worst case.",
   },
   hist: {
     items: [
@@ -281,7 +290,7 @@ export interface Resource {
 
 export const NOTES: Record<CourseKey, string> = {
   stat: "take notes by hand, since the test cheat sheet has to be handwritten. after each unit, squeeze it onto a quarter of the cheat sheet: formulas, when to use each sampling scheme, one worked example. redo lecture examples in rstudio the same week.",
-  phys: "a formula sheet is provided, so notes should be solved problems, not formulas. one page per topic: the diagram, what's given, which equation, and the trap. 3 to 5 end-of-section openstax problems per reading. keep every workshop solution for exam review.",
+  phys: "a formula sheet is provided, so notes should be solved problems, not formulas. one page per topic: the diagram, what's given, which equation, and the trap. 3 to 5 end-of-section openstax problems per reading. keep every workshop solution for exam review. lecture slides sit under content, grouped by the five course topics, and worked lecture solutions are in the course onenote. read the assigned sections from the syllabus reading guide before each class.",
   hist: "read with sq3r. five lines per chapter: when, who, what changed, why it mattered, one piece of evidence. record full citation details the moment you take a note so chicago footnotes take minutes. keep every draft and research note.",
 };
 
