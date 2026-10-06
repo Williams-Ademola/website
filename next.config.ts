@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [{ source: "/semester", destination: "/hub/semester", permanent: false }]
+  },
   images: {
     remotePatterns: [
       {
