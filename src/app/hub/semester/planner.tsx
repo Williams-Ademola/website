@@ -15,6 +15,9 @@ interface SavedState {
 
 const STORAGE_KEY = "semester-fall-2026";
 const SYNC_KEY = "semester-sync-key";
+// Stand-in key when signed in to the hub: the server checks the login instead of a typed key.
+const SESSION = "__session__";
+const keyHeader = (key: string): Record<string, string> => (key === SESSION ? {} : { "x-semester-key": key });
 const PLUS_KEY = "semester-show-plus";
 const EMPTY: SavedState = { done: {}, scores: { stat: {}, phys: {}, hist: {} } };
 const TABS = [
@@ -56,7 +59,7 @@ function writeLocal(s: SavedState) {
 }
 
 async function pull(key: string): Promise<SavedState | null | "unauthorized"> {
-  const res = await fetch("/api/semester", { headers: { "x-semester-key": key }, cache: "no-store" });
+  const res = await fetch("/api/semester", { headers: keyHeader(key), cache: "no-store" });
   if (res.status === 401) return "unauthorized";
   if (!res.ok) throw new Error("pull failed");
   const { state } = (await res.json()) as { state: Partial<SavedState> | null };
@@ -66,7 +69,7 @@ async function pull(key: string): Promise<SavedState | null | "unauthorized"> {
 async function push(key: string, s: SavedState) {
   const res = await fetch("/api/semester", {
     method: "PUT",
-    headers: { "x-semester-key": key, "Content-Type": "application/json" },
+    headers: { ...keyHeader(key), "Content-Type": "application/json" },
     body: JSON.stringify(s),
   });
   if (res.status === 401) return "unauthorized" as const;
@@ -153,7 +156,7 @@ function TagChip({ tag }: { tag: Tag }) {
   );
 }
 
-export default function SemesterPlanner() {
+export default function SemesterPlanner({ sessionSync = false }: { sessionSync?: boolean }) {
   const [now, setNow] = useState<Date | null>(null);
   const [state, setState] = useState<SavedState>(EMPTY);
   const [tab, setTab] = useState<TabId>("week");
@@ -200,11 +203,12 @@ export default function SemesterPlanner() {
     } catch {
       /* ignore */
     }
+    if (!key && sessionSync) key = SESSION;
     if (key) {
       setSyncKey(key);
       void loadFromServer(key, local);
     }
-  }, [loadFromServer]);
+  }, [loadFromServer, sessionSync]);
 
   useEffect(() => {
     if (!syncKey) return;
@@ -581,9 +585,11 @@ export default function SemesterPlanner() {
         {syncKey ? (
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className={sync === "error" || sync === "wrong key" ? "text-accent" : ""}>[{syncLabel[sync]}]</span>
-            <button onClick={disconnect} className="hover:text-accent transition-colors">
-              [stop syncing on this device]
-            </button>
+            {syncKey !== SESSION && (
+              <button onClick={disconnect} className="hover:text-accent transition-colors">
+                [stop syncing on this device]
+              </button>
+            )}
           </p>
         ) : (
           <form

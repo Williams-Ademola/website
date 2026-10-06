@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getUser, isOwner } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,14 +12,17 @@ function redis() {
   return url && token ? { url, token } : null;
 }
 
-function authorized(req: Request) {
+// Either the old sync key, or signed in to the hub as the owner.
+async function authorized(req: Request) {
   const secret = process.env.SEMESTER_KEY;
   const given = req.headers.get("x-semester-key");
-  return !!secret && !!given && given === secret;
+  if (secret && given && given === secret) return true;
+  const user = await getUser().catch(() => null);
+  return isOwner(user?.email);
 }
 
 export async function GET(req: Request) {
-  if (!authorized(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!(await authorized(req))) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const db = redis();
   if (!db) return NextResponse.json({ error: "storage not configured" }, { status: 500 });
   const res = await fetch(`${db.url}/get/${KEY}`, {
@@ -31,7 +35,7 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  if (!authorized(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!(await authorized(req))) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const db = redis();
   if (!db) return NextResponse.json({ error: "storage not configured" }, { status: 500 });
   const body = await req.text();
