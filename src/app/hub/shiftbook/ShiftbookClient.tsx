@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Bricolage_Grotesque, IBM_Plex_Sans } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
 import type { ShiftbookState } from "@/lib/shiftbook/engine";
 import { bootShiftbook, type ShiftbookStore } from "./boot";
 import { MARKUP } from "./markup";
 import "./shiftbook.css";
 
-const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-sb-display", axes: ["opsz"] });
-const body = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sb-body" });
 
 function newToken() {
   return (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, "");
@@ -58,7 +55,7 @@ export default function ShiftbookClient({ userId, email }: { userId: string; ema
   return (
     <div
       ref={root}
-      className={`sb ${display.variable} ${body.variable}`}
+      className="sb"
       // Static markup; all dynamic text is escaped in boot.ts before it is inserted.
       dangerouslySetInnerHTML={{ __html: MARKUP }}
     />

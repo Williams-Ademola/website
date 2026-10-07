@@ -187,7 +187,7 @@
 }
 
 /* --- website additions --- */
-.sb{min-height:100dvh;--display:var(--font-sb-display),"Avenir Next","Segoe UI Variable Display","Helvetica Neue",Arial,sans-serif;--body:var(--font-sb-body),"Segoe UI","Helvetica Neue",Arial,sans-serif}
+.sb{min-height:100dvh}
 .sb a{color:inherit;text-decoration:none}
 .sb header.top .tools{display:flex;gap:4px}
 .sb header.top .back{font-size:26px;line-height:1;color:var(--muted);padding:0 6px 0 0;align-self:center}
@@ -199,10 +199,155 @@
 .sb .sheet .actions form{margin:0}
 .sb .loading{padding:60px 0;text-align:center;color:var(--muted)}
 
-/* sits inside the site's page column as its own panel */
-.sb{border-radius:24px;overflow-x:clip}
-@media (max-width:640px){ .sb{margin:0 -16px;border-radius:20px 20px 0 0} }
-.sb .hint{font-size:12.5px;color:var(--faint);margin-top:4px}
-.sb{color-scheme:light}
-.sb[data-theme="dark"]{color-scheme:dark}
-@media (prefers-color-scheme: dark){ .sb:not([data-theme="light"]){color-scheme:dark} }
+/* ===== site theme: matches williamsindepth.dev (dark, Geist Mono, maroon accent) ===== */
+.sb, .sb[data-theme], .sb:not([data-theme="light"]){
+  --bg:#111; --surface:#111; --surface2:#161616; --line:#1f2937;
+  --text:#d1d5db; --muted:#9ca3af; --faint:#6b7280;
+  --accent:#9e3d52; --accent-ink:#c2566e; --accent-soft:rgba(158,61,82,.14);
+  --rail:#1f2937; --rail-done:#d1d5db; --live:#9e3d52;
+  --danger:#c2566e; --ok:#9ca3af;
+  --sheet-shadow:none;
+  --display:var(--font-geist-mono),ui-monospace,SFMono-Regular,Menlo,monospace;
+  --body:var(--font-geist-mono),ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+.sb{background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.sb .wrap{max-width:none;padding:0}
+
+/* type: lowercase chrome, white bold headings with the site's accent asterisk */
+.sb h1,.sb h2,.sb h3,.sb label,.sb .btn,.sb .lead,.sb .k,.sb .dates,.sb .gtitle,.sb .st,.sb .dow,
+.sb .tl,.sb .th,.sb .hint,.sb .foot,.sb .ut,.sb .um,.sb .cq,.sb .status,.sb .pastbtn,.sb .emptyrow,
+.sb .ends,.sb .note,.sb .preview,.sb select,.sb .toast{text-transform:lowercase}
+.sb h1,.sb h2,.sb h3{color:#fff;font-weight:700;letter-spacing:0}
+.sb h1{font-size:28px}
+.sb h1::before,.sb .period h2::before,.sb .month h2::before,.sb .section h2::before,.sb .sheet h2::before{content:"*";color:var(--accent);margin-right:8px}
+.sb h2{font-size:17px}
+.sb .sheet h2{font-size:22px}
+.sb h3{font-size:14px;font-weight:600;color:#fff}
+.sb .num{font-variant-numeric:normal;font-feature-settings:normal}
+
+/* header */
+.sb header.top{padding:0 0 18px}
+.sb header.top .brand{align-items:center;gap:10px}
+.sb header.top .back{font-size:22px;padding:0 4px 0 0}
+.sb header.top .back:hover{color:var(--accent)}
+.sb header.top .tools{gap:14px}
+.sb .iconbtn{width:auto;height:auto;border-radius:0;color:var(--muted);font-size:14px}
+.sb .iconbtn:hover{background:none;color:var(--accent)}
+.sb .iconbtn svg{display:none}
+.sb .iconbtn::after{content:"[" attr(data-label) "]"}
+
+/* cards: square, hairline borders, no fills */
+.sb .hero,.sb .period,.sb .month,.sb .list{border-radius:0;border:1px solid var(--line);background:transparent}
+.sb .hero{padding:22px 20px 20px;margin-top:0}
+.sb .hero .lead{color:var(--muted);font-size:13px}
+.sb .hero .big{font-family:var(--display);font-weight:700;font-size:52px;letter-spacing:-0.02em;color:#fff;font-variation-settings:normal}
+.sb .hero .big small{font-size:24px;color:var(--faint)}
+.sb .hero .sub{font-size:13px}
+.sb .hero .sub b,.sb .period .foot b,.sb .gtitle b{color:#fff}
+.sb .period .cell .v,.sb .month .cell .v{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-0.02em;color:#fff}
+.sb .period .cell.net .v,.sb .month .cell.net .v{color:var(--accent-ink)}
+.sb .period .cell .k,.sb .month .cell .k{font-size:12px;color:var(--faint)}
+.sb .period .grid,.sb .month .grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.sb .upcrow .uv{font-family:var(--display);font-weight:700;font-size:18px;color:#fff}
+.sb .upcrow .uv .um{font-family:var(--body)}
+.sb .divider{background:var(--line)}
+
+/* progress: ascii bar like the semester planner */
+.sb .asciibar{margin-top:16px;font-size:13px;color:var(--faint);white-space:pre;overflow:hidden;text-overflow:clip}
+.sb .asciibar .a{color:var(--accent)}
+.sb .rail .track{height:8px;border-radius:0}
+.sb .rail .fill{border-radius:0;background:var(--rail-done)}
+.sb .rail .marker{border-radius:0;width:3px;background:var(--accent)}
+.sb .rail .sleep{background:repeating-linear-gradient(135deg,transparent 0 4px,#111 4px 6px)}
+.sb .rail .tick{background:#111}
+.sb .bar{border-radius:0}
+
+/* month nav */
+.sb .month .nav button{border-radius:0;background:transparent;border:1px solid var(--line);color:var(--muted);width:32px;height:32px;font-size:16px}
+.sb .month .nav button:hover{border-color:var(--accent);color:var(--accent)}
+
+/* shift list */
+.sb .row{padding:12px 16px}
+.sb .row:hover{background:var(--surface2)}
+.sb .row .day .dd,.sb .row .pay .amt{font-family:var(--display);font-weight:700;color:#fff}
+.sb .row.past .day .dd,.sb .row.past .pay .amt{color:var(--muted)}
+.sb .row.live .day .dd,.sb .row.live .pay .st{color:var(--accent-ink)}
+.sb .row .mid .t{color:var(--text)}
+.sb .pastbtn{color:var(--faint)}
+.sb .pastbtn:hover{color:var(--accent)}
+.sb .pastbtn::before{content:"["}.sb .pastbtn::after{content:"]"}
+
+/* buttons: the site's [bracket] links */
+.sb .btn{border:0;background:transparent;border-radius:0;padding:6px 0;color:var(--text);font-weight:400;gap:0}
+.sb .btn::before{content:"["}
+.sb .btn::after{content:"]"}
+.sb .btn:hover{color:var(--accent)}
+.sb .btn.primary{color:#fff;background:transparent;border:0}
+.sb .btn.accent{color:var(--accent-ink);background:transparent;border:0}
+.sb .btn.danger{color:var(--danger)}
+.sb .btn.small{padding:4px 0;font-size:14px;border-radius:0}
+.sb .hero .actions,.sb .callinks{gap:18px}
+.sb .sheet .actions .right{gap:18px}
+
+/* bottom bar: two boxed bracket buttons aligned to the page column */
+.sb .dock{background:linear-gradient(to top,#111 70%,rgba(17,17,17,0))}
+.sb .dock .in{max-width:52rem;gap:12px}
+.sb .dock .btn{border:1px solid var(--line);padding:12px 10px;justify-content:center;background:#111}
+.sb .dock .btn.primary{border-color:var(--accent)}
+.sb .dock .btn:hover{border-color:var(--accent)}
+
+/* sheets */
+.sb .scrim{background:rgba(0,0,0,.65)}
+.sb .sheet{border-radius:0;border-top:1px solid var(--line);background:#111}
+.sb .sheet .handle{background:var(--line);border-radius:0}
+.sb .sheet .inner{max-width:40rem}
+.sb .field label{font-size:12.5px;color:var(--muted)}
+.sb .field input[type=text],.sb .field input[type=number],.sb .field input[type=date],.sb .field input[type=time],
+.sb .field input[type=password],.sb .field select,.sb .tpl select,.sb .tpl input,.sb .copyrow input{
+  background:transparent;border:1px solid var(--line);border-radius:4px;color:#e5e7eb;font-size:15px}
+.sb .field input:focus,.sb .field select:focus,.sb .tpl select:focus,.sb .tpl input:focus{outline:none;border-color:rgba(158,61,82,.6)}
+.sb input:focus-visible,.sb select:focus-visible,.sb button:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+.sb .preview{background:transparent;border:1px dashed var(--line);border-radius:0;font-size:13px}
+.sb .preview b{color:#fff}
+.sb .tpl .x{color:var(--faint)}
+.sb .tpl .x:hover{color:var(--accent)}
+.sb .hint{font-size:12px;color:var(--faint);margin-top:4px}
+.sb .note{font-size:12px;color:var(--faint)}
+.sb .toggle{border-top-color:var(--line)}
+.sb .toggle .tl{font-size:14px}
+.sb .toggle .th{font-size:12px}
+
+/* switches become the planner's [x] / [ ] checkboxes */
+.sb .switch{width:auto;height:auto;border-radius:0;background:none;color:var(--faint);font-size:15px;padding:4px 0;transition:none}
+.sb .switch::after{content:"[ ]";position:static;width:auto;height:auto;border-radius:0;background:none;box-shadow:none;transform:none;transition:none}
+.sb .switch[aria-checked="true"]{background:none;color:var(--accent-ink)}
+.sb .switch[aria-checked="true"]::after{content:"[x]";transform:none}
+
+/* the site is dark-only, so the light/dark picker goes */
+.sb .toggle:has(#sTheme){display:none}
+
+/* toast */
+.sb .toast{background:#111;color:#fff;border:1px solid var(--accent);border-radius:0;font-size:13px}
+
+/* lowercase the remaining app text, but never what people typed */
+.sb .sub,.sb .row .m,.sb .row .mid .t,.sb .cell .v,.sb .uv{text-transform:lowercase}
+.sb .usr{text-transform:none}
+.sb .row .day .dow{text-transform:lowercase}
+.sb input::placeholder{text-transform:lowercase;color:var(--faint)}
+.sb .btn{display:inline-block;white-space:nowrap}
+.sb header.top{flex-wrap:wrap;row-gap:6px}
+.sb .row .pay{max-width:40vw}
+.sb .row .pay .st{line-height:1.3}
+
+@media (max-width:420px){
+  .sb h1{font-size:22px}
+  .sb .iconbtn{font-size:13px}
+  .sb header.top .tools{gap:10px}
+  .sb .dock .btn{display:block;font-size:13px;padding:12px 4px}
+  .sb .row{grid-template-columns:40px 1fr auto;gap:10px;padding:12px 14px}
+  .sb .row .mid .t{font-size:14px}
+  .sb .hero .big{font-size:42px}
+  .sb .period .cell .v,.sb .month .cell .v{font-size:20px}
+  .sb .period .grid,.sb .month .grid{grid-template-columns:1fr 1fr}
+}
