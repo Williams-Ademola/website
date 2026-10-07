@@ -243,7 +243,7 @@ export function bootShiftbook(opts: BootOptions): () => void {
         '<p class="sub">Starts in <b>' + fmtDur(+start - +now) + "</b>. " + fmtHours(full.hours) + " paid" +
         (full.onsite - full.hours > 0.01 ? " of " + fmtHours(full.onsite) + " on site" : "") +
         (full.ot > 0 ? " including " + fmtHours(full.ot) + " at time and a half" : "") +
-        (nx.note ? ". " + esc(nx.note) : "") + "</p>";
+        (nx.note ? '. <span class="usr">' + esc(nx.note) + "</span>" : "") + "</p>";
     } else {
       el.innerHTML =
         '<p class="lead">No upcoming shifts</p><div class="big num" style="font-size:30px">All caught up</div><p class="sub">Add the next week when the schedule comes through.</p>';
@@ -327,11 +327,19 @@ export function bootShiftbook(opts: BootOptions): () => void {
     el.innerHTML =
       '<div class="head"><h2>This pay period</h2><span class="dates">' + periodLabel(p) + "</span></div>" +
       '<div class="grid">' + cells + "</div>" +
-      '<div class="bar"><div class="sched" style="width:100%"></div><div class="earned" style="width:' + pct + '%"></div></div>' +
+      asciiBar(pct) +
       '<div class="foot"><span><b>' + worked + "</b> shift" + (worked === 1 ? "" : "s") + " done</span><span><b>" + left +
       "</b> to go</span><span>at <b>" + fmtMoney(Number(st.rate) || 0) + "</b>/h" +
       ((Number(st.vacPct) || 0) > 0 ? " + " + Number(st.vacPct) + "% vacation pay" : "") + "</span></div>" +
       warn + netNote + upcoming;
+  }
+
+  function asciiBar(pct: number, width = 24) {
+    const filled = Math.max(0, Math.min(width, Math.round((pct / 100) * width)));
+    return (
+      '<p class="asciibar" aria-label="' + Math.round(pct) + '% of this period earned">[<span class="a">' +
+      "#".repeat(filled) + "</span>" + "-".repeat(width - filled) + "] " + Math.round(pct) + "% earned</p>"
+    );
   }
 
   /* monthly view */
@@ -472,7 +480,7 @@ export function bootShiftbook(opts: BootOptions): () => void {
           '<div class="m">' + fmtHours(full.hours) + " paid" + (full.onsite - full.hours > 0.01 ? " of " + fmtHours(full.onsite) : "") +
           (full.ot > 0 ? ", " + fmtHours(full.ot) + " OT" : "") +
           (sh.rate != null && (sh.rate as unknown) !== "" ? ", $" + Number(sh.rate).toFixed(2) + "/h" : "") +
-          (sh.note ? ", " + esc(sh.note) : "") + "</div></div>" +
+          (sh.note ? ', <span class="usr">' + esc(sh.note) + "</span>" : "") + "</div></div>" +
           '<div class="pay"><div class="amt num">' + fmtMoney(full.pay) + '</div><div class="st">' + st + "</div></div></button>";
       }
       html += "</div></div>";
